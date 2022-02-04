@@ -5,6 +5,6 @@ namespace vaxe
     class vApplication
     {
     public:
-        virtual void Run() {}
+        virtual int Run() {return -1;}
     };
 }

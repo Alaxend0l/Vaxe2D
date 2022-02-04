@@ -4,8 +4,9 @@
 
 namespace vaxe
 {
-    void vApp_First::Run()
+    int vApp_First::Run()
     {
         std::cout << "APP RUNNING!" << std::endl;
+        return 0;
     }
 }

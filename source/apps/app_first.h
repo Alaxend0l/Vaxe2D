@@ -7,6 +7,6 @@ namespace vaxe
     class vApp_First : vApplication
     {
     public:
-        void Run() override;
+        int Run() override;
     };
 }

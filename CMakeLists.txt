@@ -13,6 +13,8 @@ endif()
 set(ENTT_PATH "${CMAKE_SOURCE_DIR}/third_party/entt")
 set(GLM_PATH "${CMAKE_SOURCE_DIR}/third_party/glm")
 
+find_package(OpenGL REQUIRED)
+
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/source/*.cpp)
 
 add_executable(${NAME} ${SOURCES})
@@ -25,4 +27,7 @@ target_include_directories(${NAME} PUBLIC
     ${PROJECT_SOURCE_DIR}/source
     ${ENTT_PATH}
     ${GLM_PATH}
+    ${OPENGL_INCLUDE_DIR}
     )
+
+target_link_libraries(${NAME} ${OPENGL_LIBRARIES} glfw) 
