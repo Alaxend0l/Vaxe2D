@@ -11,9 +11,10 @@ else()
 endif()
 
 set(ENTT_PATH "${CMAKE_SOURCE_DIR}/third_party/entt")
-set(GLM_PATH "${CMAKE_SOURCE_DIR}/third_party/glm")
 
-find_package(OpenGL REQUIRED)
+find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
+find_package(GLEW)
+find_package(glm)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/source/*.cpp)
 
@@ -26,8 +27,8 @@ target_compile_features(${NAME} PUBLIC cxx_std_20)
 target_include_directories(${NAME} PUBLIC
     ${PROJECT_SOURCE_DIR}/source
     ${ENTT_PATH}
-    ${GLM_PATH}
     ${OPENGL_INCLUDE_DIR}
+    ${GLEW_INCLUDE_DIR}
     )
 
-target_link_libraries(${NAME} ${OPENGL_LIBRARIES} glfw) 
+target_link_libraries(${NAME} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} glfw) 

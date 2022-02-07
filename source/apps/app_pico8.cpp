@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <gl/GL.h>
+#include <GL/gl.h>
 
 #include "core/vWindow.h"
 #include "core/vMemory.h"
