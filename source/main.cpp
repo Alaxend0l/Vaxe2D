@@ -1,5 +1,4 @@
-#include "apps/app_first.h"
-#include "apps/app_second.h"
+#include "apps/app_chip8.h"
 
 // std
 #include <cstdlib>
@@ -8,7 +7,7 @@
 
 int main()
 {
-    vaxe::vApp_Second app{};
+    vaxe::vApp_Chip8 app{};
 
 	try
 	{
