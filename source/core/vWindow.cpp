@@ -5,17 +5,25 @@ namespace vaxe
     vWindow::vWindow(uint32_t width, uint32_t height, std::string name) : m_width(width), m_height(height), m_name(name)
     {
         /* Initialize the library */
-        glfwInit();
+        SDL_Init(SDL_INIT_EVERYTHING);
 
-        /* Create a windowed mode window and its OpenGL context */
-        m_window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
+        // Setup window
+        //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+        // SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+        //SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 ); 
+        SDL_DisplayMode current;
+        SDL_GetCurrentDisplayMode(0, &current);
 
-        /* Make the window's context current */
-        glfwMakeContextCurrent(m_window);
+        m_window = SDL_CreateWindow(
+            name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+            width, height, SDL_RENDERER_ACCELERATED);
     }
 
     vWindow::~vWindow()
     {
-        glfwTerminate();
+        SDL_DestroyWindow(m_window);
     }
 }

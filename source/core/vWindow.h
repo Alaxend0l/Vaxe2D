@@ -5,7 +5,9 @@
 // libs
 
 #include "GL/glew.h"
-#include <GLFW/glfw3.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_thread.h>
 #include "GL/gl.h"
 
 namespace vaxe
@@ -18,15 +20,15 @@ namespace vaxe
 
         // Generic Functions
 
-        bool ShouldClose() { return glfwWindowShouldClose(m_window); }
+        bool ShouldClose() { return false; }
 
         // Getters and Setters
 
-        GLFWwindow* GetGLFWWindow() { return m_window; }
+        SDL_Window* GetSDLWindow() { return m_window; }
         uint32_t GetWindowWidth() { return m_width; }
         uint32_t GetWindowHeight() { return m_height; }
     private:
-        GLFWwindow* m_window;
+        SDL_Window* m_window;
 
         std::string m_name;
 

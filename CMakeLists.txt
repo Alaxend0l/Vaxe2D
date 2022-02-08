@@ -7,7 +7,7 @@ project(${NAME} VERSION 0.0.1)
 if (WIN32)
     add_subdirectory("third_party/glfw")
 else()
-    find_package(glfw3 3.3 REQUIRED)
+    find_package(SDL2 REQUIRED)
 endif()
 
 set(ENTT_PATH "${CMAKE_SOURCE_DIR}/third_party/entt")
@@ -29,6 +29,7 @@ target_include_directories(${NAME} PUBLIC
     ${ENTT_PATH}
     ${OPENGL_INCLUDE_DIR}
     ${GLEW_INCLUDE_DIR}
+    ${SDL2_INCLUDE_DIR}
     )
 
-target_link_libraries(${NAME} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} glfw) 
+target_link_libraries(${NAME} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${SDL2_LIBRARIES}) 

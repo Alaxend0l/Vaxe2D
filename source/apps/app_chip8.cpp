@@ -1,10 +1,14 @@
 #include "apps/app_chip8.h"
 
 #include "core/vWindow.h"
+#include "core/vRenderer.h"
 #include "core/vMemory.h"
 #include "core/vFramebuffer.h"
 
 #include <iostream>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_timer.h>
 
 #define WIDTH 64
 #define HEIGHT 32
@@ -13,27 +17,45 @@ namespace vaxe
 {
     int vApp_Chip8::Run()
     {
-        vWindow window { WIDTH * 4, HEIGHT * 4, "CHIP-8" };
+        vWindow window { WIDTH * 8, HEIGHT * 8, "CHIP-8" };
+        vRenderer renderer { window.GetSDLWindow(), SDL_RENDERER_ACCELERATED};
+        SDL_RenderSetLogicalSize(renderer.GetRenderer(), WIDTH, HEIGHT);
+
+        SDL_GLContext gl_context = SDL_GL_CreateContext(window.GetSDLWindow());
+        SDL_GL_SetSwapInterval(0);  // Enable vsync
+
         vMemory memory { 4096 , MEMORY_ENDIAN_BIG };
-        vFramebuffer framebuffer {WIDTH, HEIGHT};
+        vFramebuffer framebuffer {renderer.GetRenderer(), WIDTH, HEIGHT};
+
+        int i = 0;
         
 
         /* Loop until the user closes the window */
-        while (!window.ShouldClose())
+        while (!quit)
         {
-            /* Render here */
-            glClear(GL_COLOR_BUFFER_BIT);
+            SDL_Event event;
+            while(SDL_PollEvent(&event))
+            {
+                switch(event.type)
+                {
+                case SDL_KEYDOWN:
+                    if(event.key.keysym.sym == SDLK_ESCAPE) quit = true;
+                    break;
+                case SDL_QUIT:
+                    quit = true;
+                    break;
+                }
+            }
 
-            framebuffer.Render(window);
+            framebuffer.TESTONLY_SetValue(i, 0xFF);
+            i++;
 
-            /* Swap front and back buffers */
-            glfwSwapBuffers(window.GetGLFWWindow());
+            framebuffer.UpdateTexture();
+            renderer.PerformRender(framebuffer.GetTexture());
 
-            /* Poll for and process events */
-            glfwPollEvents();
+            SDL_Delay(1000 / 60);
         }
-
-        glfwTerminate();
+        
         return 0;
     }
 }

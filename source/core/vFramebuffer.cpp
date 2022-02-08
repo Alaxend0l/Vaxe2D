@@ -2,37 +2,28 @@
 
 namespace vaxe
 {
-    vFramebuffer::vFramebuffer(uint32_t width, uint32_t height) : m_width(width), m_height(height)
+    vFramebuffer::vFramebuffer(SDL_Renderer* renderer, uint32_t width, uint32_t height) : m_renderer(renderer), m_width(width), m_height(height)
     {
-        m_data = std::vector<unsigned char>(width * height * 3);
+        m_size = width * height * 3;
+        m_data = new unsigned char[m_size]();
 
-        glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-        glTexImage2D
-            (
-            GL_TEXTURE_2D, 0,
-            GL_RGB, width, height, 0,
-            GL_RGB, GL_UNSIGNED_BYTE, &m_data[0]
-            );
+        m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, m_width, m_height);
 
         ClearBuffer();
     }
 
-    void vFramebuffer::ClearBuffer()
+    vFramebuffer::~vFramebuffer()
     {
-        for (auto colorValue : m_data)
-        {
-            colorValue = 0;
-        }
+        free(m_data);
     }
 
-    void vFramebuffer::Render(vWindow& window)
+    void vFramebuffer::ClearBuffer()
     {
-        GLuint readFboId = 0;
-        glGenFramebuffers(1, &readFboId);
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, readFboId);
-        glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, (GLuint)m_data[0], 0);
-        glBlitFramebuffer(0, 0, m_width, m_height, 0, 0, window.GetWindowWidth(), window.GetWindowHeight(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-        glDeleteFramebuffers(1, &readFboId);
+        memset(GetDataStart(), 0x00, m_size);
+    }
+
+    void vFramebuffer::UpdateTexture()
+    {
+        SDL_UpdateTexture(m_texture, NULL, GetDataStart(), m_size/m_height);
     }
 }
