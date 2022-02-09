@@ -1,5 +1,7 @@
 #pragma once
 
+#include "types/vByte1.h"
+
 #include <cstddef>
 
 namespace vaxe
@@ -9,7 +11,7 @@ namespace vaxe
     public:
         virtual int Run() {return -1;}
 
-        unsigned char* rom;
+        byte_1* rom;
         size_t romSize;
 
     protected:

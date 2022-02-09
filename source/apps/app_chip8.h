@@ -15,7 +15,7 @@ namespace vaxe
     public:
         int Run() override;
 
-        unsigned char* rom;
+        byte_1* rom;
         size_t romSize;
 
     private:
@@ -32,14 +32,14 @@ namespace vaxe
         unsigned short programCounter = 0x200;
         unsigned short stackPointer = 0x0;
 
-        unsigned char delayTimer = 0x0;
-        unsigned char soundTimer = 0x0;
+        byte_1 delayTimer = 0x0;
+        byte_1 soundTimer = 0x0;
 
         unsigned short stack[16];
-        unsigned char key[16];
-        unsigned char v[16];
+        byte_1 key[16];
+        byte_1 v[16];
 
-        unsigned char fonts[80]
+        byte_1 fonts[80]
         {
             0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
             0x20, 0x60, 0x20, 0x20, 0x70, // 1

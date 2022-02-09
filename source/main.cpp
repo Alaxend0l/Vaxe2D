@@ -1,5 +1,7 @@
 #include "apps/app_chip8.h"
 
+#include "types/vByte1.h"
+
 // std
 #include <cstdlib>
 #include <iostream>
@@ -8,7 +10,7 @@
 
 vaxe::vApp_Chip8 app{};
 
-std::string romPath = "../roms/chip-8/test_opcode.ch8";
+std::string romPath = "../roms/chip-8/demos/Maze [David Winter, 199x].ch8";
 size_t romSize;
 
 
@@ -21,7 +23,7 @@ unsigned char* loadRom()
 
     romSize = romFile.tellg();
 
-	unsigned char* data = (unsigned char*)malloc(romSize + 1);
+	byte_1* data = (byte_1*)malloc(romSize + 1);
 	data[romSize] = '\0';
 
 	romFile.seekg(0, std::ios::beg);

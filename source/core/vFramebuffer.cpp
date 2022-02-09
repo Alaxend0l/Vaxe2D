@@ -5,7 +5,7 @@ namespace vaxe
     vFramebuffer::vFramebuffer(SDL_Renderer* renderer, uint32_t width, uint32_t height) : m_renderer(renderer), m_width(width), m_height(height)
     {
         m_size = width * height * 4;
-        m_data = new unsigned char[m_size]();
+        m_data = new byte_1[m_size]();
 
         m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, m_width, m_height);
 
@@ -30,6 +30,16 @@ namespace vaxe
         m_data[trueOffset + 1] = color.g;
         m_data[trueOffset + 2] = color.b;
         m_data[trueOffset + 3] = color.a;
+    }
+
+    vColor vFramebuffer::GetColor(uint64_t offset)
+    {
+        uint64_t trueOffset = offset * 4;
+        
+        return {m_data[trueOffset + 0],
+        m_data[trueOffset + 1],
+        m_data[trueOffset + 2],
+        m_data[trueOffset + 3]};
     }
 
     void vFramebuffer::ClearBuffer()

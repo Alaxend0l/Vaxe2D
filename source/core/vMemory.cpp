@@ -6,12 +6,12 @@ namespace vaxe
 {
     vMemory::vMemory(uint64_t size, uint8_t endian) : m_size(size), m_endian(endian)
     {
-        m_data = new unsigned char(size);
+        m_data = new byte_1[size];
     }
 
     vMemory::~vMemory()
     {
-
+        //free(m_data);
     }
 
     void vMemory::ClearMemory()
@@ -19,7 +19,7 @@ namespace vaxe
         memset(m_data, 0x00, m_size);
     }
 
-    void vMemory::InsertRom(unsigned char* rom, size_t romSize, uint64_t offset)
+    void vMemory::InsertRom(byte_1* rom, size_t romSize, uint64_t offset)
     {
         for (int i = 0; i < romSize; ++i)
         {
@@ -27,19 +27,13 @@ namespace vaxe
         }
     }
 
-    unsigned char& vMemory::operator[](uint64_t offset)
+    byte_1& vMemory::operator[](uint64_t offset)
     {
-        if (offset >= m_size)
+        if (offset < 0 || offset >= m_size)
         {
             std::cout << "Out of bounds exception: vMemory" << std::endl;
             exit(0);
         }
         return m_data[offset];
-    }
-
-    bool vMemory::writeByte(uint64_t offset, unsigned char byte)
-    {
-        m_data[offset] = byte;
-        return true;
     }
 }

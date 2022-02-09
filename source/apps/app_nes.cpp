@@ -1,18 +1,19 @@
-#include "apps/app_chip8.h"
+#include "apps/app_nes.h"
 
 #include <iostream>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 
-#define WIDTH 64
-#define HEIGHT 32
+#define WIDTH 256
+#define HEIGHT 240
 
 namespace vaxe
 {
-    int vApp_Chip8::Run()
+
+    int vApp_NES::Run()
     {
-        vWindow window { WIDTH * 8, HEIGHT * 8, "CHIP-8" };
+        vWindow window { WIDTH * 3, HEIGHT * 3, "NES" };
         vRenderer renderer { window.GetSDLWindow(), SDL_RENDERER_ACCELERATED};
         SDL_RenderSetLogicalSize(renderer.GetRenderer(), WIDTH, HEIGHT);
 
@@ -23,10 +24,14 @@ namespace vaxe
 
         InitializeValues();
 
+        SDL_Event event;
+        uint64_t previousCounter = SDL_GetPerformanceCounter();
+        uint64_t countPerSecond = SDL_GetPerformanceFrequency();
+
         /* Loop until the user closes the window */
         while (!quit)
         {
-            SDL_Event event;
+            
             while(SDL_PollEvent(&event))
             {
                 switch(event.type)
@@ -40,26 +45,30 @@ namespace vaxe
                 }
             }
 
+            
+
             /// Emulate Cycle
 
-            // Access Opcode
-            opcode = memory[programCounter] << 8 | memory[programCounter + 1];
-            printf ("pc:%x\n",programCounter);
-            printf ("Executing Opcode: 0x%x\n", opcode);
+            // Access Instruction
+            instruction = bus.ram[pc];
 
-            x = (opcode & 0x0F00) >> 8;
-            y = (opcode & 0x00F0) >> 4;
-            n = (opcode & 0x000F);
-            nn = (opcode & 0x00FF);
-            nnn = opcode - (opcode & 0xF000);
+            //opcode = memory[programCounter] << 8 | memory[programCounter + 1];
+            //printf ("pc:%x\n",programCounter);
+            //printf ("Executing Opcode: 0x%x\n", opcode);
 
-            printf ("x:%x\n",x);
-            printf ("y:%x\n",y);
-            printf ("n:%x\n",n);
-            printf ("nn:%x\n",nn);
-            printf ("nnn:%x\n\n",nnn);
+            //x = (opcode & 0x0F00) >> 8;
+            //y = (opcode & 0x00F0) >> 4;
+            //n = (opcode & 0x000F);
+            //nn = (opcode & 0x00FF);
+            //nnn = opcode - (opcode & 0xF000);
+            //printf ("x:%x\n",x);
+            //printf ("y:%x\n",y);
+            //printf ("n:%x\n",n);
+            //printf ("nn:%x\n",nn);
+            //printf ("nnn:%x\n\n",nnn);
 
             // Decode Opcode
+            /*
             switch (opcode & 0xF000)
             {
                 default:
@@ -78,7 +87,7 @@ namespace vaxe
                         case 0x000E: //0x00EE: Return from subroutine
                             stackPointer--;
                             programCounter = stack[stackPointer];
-                            programCounter += 2;
+                            //programCounter += 2;
                             break;
 
                         default:
@@ -314,16 +323,18 @@ namespace vaxe
                 if (soundTimer == 1) printf("BEEP\n");
                 --soundTimer;
             }
+            */
 
 
             /// Perform Render! All operations should be done by here.
 
-            if (opcode == 0x00E0)
+            if (true)
             {
                 framebuffer.UpdateTexture();
             }
 
             renderer.PerformRender(framebuffer.GetTexture());
+            PrintDebugData();
 
             SDL_Delay(1000 / 60);
         }
@@ -331,65 +342,112 @@ namespace vaxe
         return 0;
     }
 
-    void vApp_Chip8::InitializeValues()
+    void vApp_NES::InitializeValues()
     {
         // Reset important values
 
-        opcode = 0x0;
-        indexRegister = 0x0;
-        programCounter = 0x200;
-        stackPointer = 0x0;
+        bus.ram.ClearMemory();
 
-        memory.ClearMemory();
+        // Program Counter
+        pc = 0xC000;
 
-        delayTimer = 0x0;
-        soundTimer = 0x0;
+        // Stack Pointer
+        sp = 0x0;
 
-        memset(stack, 0x00, 32);
-        memset(key, 0x00, 16);
-        memset(v, 0x00, 16);
+        //General Purpose Registers
+        gpr_a = 0x0;
+        gpr_x = 0x0;
+        gpr_y = 0x0;
 
-        for (int i = 0; i < 80; i++)
-        {
-            memory[i] = fonts[i];
-        }
+        //memset(stack, 0x00, 32);
 
         palette.ClearPalette();
-        palette.AddColor({0,0,0,255});
-        palette.AddColor({255,255,255,255});
+        palette.AddColor(84, 84, 84, 255);
+        palette.AddColor(0, 30, 116, 255);
+        palette.AddColor(8, 16, 144, 255);
+        palette.AddColor(48, 0, 136, 255);
+        palette.AddColor(68, 0, 100, 255);
+        palette.AddColor(92, 0, 48, 255);
+        palette.AddColor(84, 4, 0, 255);
+        palette.AddColor(60, 24, 0, 255);
+        palette.AddColor(32, 42, 0, 255);
+        palette.AddColor(8, 58, 0, 255);
+        palette.AddColor(0, 64, 0, 255);
+        palette.AddColor(0, 60, 0, 255);
+        palette.AddColor(0, 50, 60, 255);
+        palette.AddColor(0, 0, 0, 255);
+        palette.AddColor(0, 0, 0, 255);
+        palette.AddColor(0, 0, 0, 255);
+        palette.AddColor(152, 150, 152, 255);
+        palette.AddColor(8, 76, 196, 255);
+        palette.AddColor(48, 50, 236, 255);
+        palette.AddColor(92, 30, 228, 255);
+        palette.AddColor(136, 20, 176, 255);
+        palette.AddColor(160, 20, 100, 255);
+        palette.AddColor(152, 34, 32, 255);
+        palette.AddColor(120, 60, 0, 255);
+        palette.AddColor(84, 90, 0, 255);
+        palette.AddColor(40, 114, 0, 255);
+        palette.AddColor(8, 124, 0, 255);
+        palette.AddColor(0, 118, 40, 255);
+        palette.AddColor(0, 102, 120, 255);
+        palette.AddColor(0, 0, 0, 255);
+        palette.AddColor(0, 0, 0, 255);
+        palette.AddColor(0, 0, 0, 255);
+        palette.AddColor(236, 238, 236, 255);
+        palette.AddColor(76, 154, 236, 255);
+        palette.AddColor(120, 124, 236, 255);
+        palette.AddColor(176, 98, 236, 255);
+        palette.AddColor(228, 84, 236, 255);
+        palette.AddColor(236, 88, 180, 255);
+        palette.AddColor(236, 106, 100, 255);
+        palette.AddColor(212, 136, 32, 255);
+        palette.AddColor(160, 170, 0, 255);
+        palette.AddColor(116, 196, 0, 255);
+        palette.AddColor(76, 208, 32, 255);
+        palette.AddColor(56, 204, 108, 255);
+        palette.AddColor(56, 180, 204, 255);
+        palette.AddColor(60, 60, 60, 255);
+        palette.AddColor(0, 0, 0, 255);
+        palette.AddColor(0, 0, 0, 255);
+        palette.AddColor(236, 238, 236, 255);
+        palette.AddColor(168, 204, 236, 255);
+        palette.AddColor(188, 188, 236, 255);
+        palette.AddColor(212, 178, 236, 255);
+        palette.AddColor(236, 174, 236, 255);
+        palette.AddColor(236, 174, 212, 255);
+        palette.AddColor(236, 180, 176, 255);
+        palette.AddColor(228, 196, 144, 255);
+        palette.AddColor(204, 210, 120, 255);
+        palette.AddColor(180, 222, 120, 255);
+        palette.AddColor(168, 226, 144, 255);
+        palette.AddColor(152, 226, 180, 255);
+        palette.AddColor(160, 214, 228, 255);
+        palette.AddColor(160, 162, 160, 255);
+        palette.AddColor(0, 0, 0, 255);
+        palette.AddColor(0, 0, 0, 255);
 
-        memory.InsertRom(rom, romSize, 0x200);
+        bus.ram.InsertRom(rom, romSize, 0x8000);
 
     }
 
-    void vApp_Chip8::DrawSprite(vFramebuffer* framebuffer, unsigned short _x, unsigned short _y, unsigned short _height)
+    void vApp_NES::PrintDebugData()
     {
-        unsigned short pixel;
-        v[0xF] = 0;
+        // Program Counter
+        printf("%x ", pc);
 
-        for (int yline = 0; yline < _height; yline++)
-        {
-            pixel = memory[indexRegister + yline];
-            for (int xline = 0; xline < 8; xline++)
-            {
-                int framebufferIndex = (WIDTH * (_y+yline) + (_x + xline));
-                if ((pixel & (0x0080 >> xline)) != 0)
-                {
-                    bool isOnInBuffer = framebuffer->GetColor(indexRegister).r;
-                    if (isOnInBuffer)
-                    {
-                        v[0xF] = 1;
-                    }
+        // Instruction
+        printf("%x ", instruction);
 
-                    framebuffer->SetColor(framebufferIndex, palette[(isOnInBuffer ^= 1) ? 1 : 0]);
-                    
-                }
+        // General Process Registers
+        printf("a:%x ", gpr_a);
+        printf("x:%x ", gpr_x);
+        printf("y:%x ", gpr_y);
 
-                
-                
-            }
-        }
+        // Cycle
+        printf("cyc:%x ", cycle);
 
-        framebuffer->UpdateTexture();
+        // Return
+        printf("\n");
     }
 }

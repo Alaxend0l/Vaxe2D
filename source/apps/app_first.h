@@ -9,7 +9,7 @@ namespace vaxe
     public:
         int Run() override;
 
-        unsigned char* rom;
+        byte_1* rom;
         size_t romSize;
     };
 }

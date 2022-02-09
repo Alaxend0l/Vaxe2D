@@ -1,5 +1,11 @@
 #pragma once
 
+// types
+
+#include "types/vByte1.h"
+
+// core
+
 #include "core/vWindow.h"
 #include "core/vPalette.h"
 
@@ -22,12 +28,14 @@ namespace vaxe
         void SetColor(uint32_t x, uint32_t y, vColor color);
         void SetColor(uint64_t offset, vColor color);
 
-        unsigned char* GetDataStart() { return m_data; }
+        vColor GetColor(uint64_t offset);
+
+        byte_1* GetDataStart() { return &m_data[0]; }
         uint64_t GetDataSize() { return m_size; }
         SDL_Texture* GetTexture() { return m_texture; }
 
     private:
-        unsigned char* m_data;
+        byte_1* m_data;
 
         uint32_t m_width;
         uint32_t m_height;
