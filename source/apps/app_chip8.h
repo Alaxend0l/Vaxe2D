@@ -6,6 +6,7 @@
 #include "core/vRenderer.h"
 #include "core/vMemory.h"
 #include "core/vFramebuffer.h"
+#include "core/vPalette.h"
 
 namespace vaxe
 {
@@ -22,16 +23,17 @@ namespace vaxe
         void DrawSprite(vFramebuffer* framebuffer, unsigned short x, unsigned short y, unsigned short height);
 
         vMemory memory { 4096 , MEMORY_ENDIAN_BIG };
+        vPalette palette {};
 
         // Small Values
 
-        unsigned short opcode;
-        unsigned short indexRegister;
+        unsigned short opcode = 0x0;
+        unsigned short indexRegister = 0x0;
         unsigned short programCounter = 0x200;
-        unsigned short stackPointer;
+        unsigned short stackPointer = 0x0;
 
-        unsigned char delayTimer;
-        unsigned char soundTimer;
+        unsigned char delayTimer = 0x0;
+        unsigned char soundTimer = 0x0;
 
         unsigned short stack[16];
         unsigned char key[16];
@@ -56,5 +58,11 @@ namespace vaxe
             0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
             0xF0, 0x80, 0xF0, 0x80, 0x80  // F
         };
+
+        unsigned char x = 0x0;
+        unsigned char y = 0x0;
+        unsigned char n = 0x0;
+        unsigned char nn = 0x0;
+        unsigned short nnn = 0x0;
     };
 }

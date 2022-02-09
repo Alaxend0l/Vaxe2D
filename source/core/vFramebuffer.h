@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/vWindow.h"
+#include "core/vPalette.h"
 
 // std
 
@@ -18,7 +19,8 @@ namespace vaxe
         void ClearBuffer();
         void UpdateTexture();
 
-        void TESTONLY_SetValue(uint64_t offset, const char value) {if (offset < m_size) m_data[offset] = value;}
+        void SetColor(uint32_t x, uint32_t y, vColor color);
+        void SetColor(uint64_t offset, vColor color);
 
         unsigned char* GetDataStart() { return m_data; }
         uint64_t GetDataSize() { return m_size; }

@@ -44,17 +44,31 @@ namespace vaxe
 
             // Access Opcode
             opcode = memory[programCounter] << 8 | memory[programCounter + 1];
-            printf ("Executing Opcode: 0x%xX\n", opcode);
+            printf ("pc:%x\n",programCounter);
+            printf ("Executing Opcode: 0x%x\n", opcode);
+
+            x = (opcode & 0x0F00) >> 8;
+            y = (opcode & 0x00F0) >> 4;
+            n = (opcode & 0x000F);
+            nn = (opcode & 0x00FF);
+            nnn = opcode - (opcode & 0xF000);
+
+            printf ("x:%x\n",x);
+            printf ("y:%x\n",y);
+            printf ("n:%x\n",n);
+            printf ("nn:%x\n",nn);
+            printf ("nnn:%x\n\n",nnn);
 
             // Decode Opcode
             switch (opcode & 0xF000)
             {
                 default:
-                    printf ("Unknown Opcode! 0x%xX\n", opcode);
+                    printf ("Unknown Opcode! 0x%x\n", opcode);
+                    exit(3);
                     break;
                 
                 case 0x0000:
-                    switch (opcode & 0x000F)
+                    switch (n)
                     {
                         case 0x0000: //0x00E0: Clear Screen
                             framebuffer.ClearBuffer();
@@ -62,176 +76,214 @@ namespace vaxe
                             break;
 
                         case 0x000E: //0x00EE: Return from subroutine
-                            programCounter = stack[stackPointer-1];
                             stackPointer--;
+                            programCounter = stack[stackPointer];
+                            //programCounter += 2;
                             break;
 
                         default:
-                            printf ("Unknown Opcode! 0x%xX\n", opcode);
+                            printf ("Unknown Opcode! 0x%x\n", opcode);
+                            exit(3);
                             break;
                     }
                     break;
 
                 case 0x1000: // 1NNN: Jump to address NNN
-                    printf ("Jump! 0x%xX\n", opcode & 0x0FFF);
-                    programCounter = opcode & 0x0FFF;
+                    printf ("Jump! 0x%x\n", nnn);
+                    programCounter = nnn;
                     break;
 
                 case 0x2000: // 2NNN: Call subroutine at nnn
                     stack[stackPointer] = programCounter;
-                    ++stackPointer;
-                    programCounter = opcode & 0x0FFF;
+                    stackPointer++;
+                    programCounter = nnn;
                     break;
 
                 case 0x3000: // 3XNN: Skip if v[X] is equal to NN
-                    if (v[(opcode & 0x0F00) >> 8] == opcode & 0x00FF)
+                    if (v[x] == nn)
+                    {
+                        programCounter += 4;
+                    }
+                    else
                     {
                         programCounter += 2;
                     }
-                    programCounter += 2;
                     break;
 
                 case 0x4000: // 4XNN: Skip if v[X] is NOT equal to NN
-                    if (v[(opcode & 0x0F00) >> 8] != opcode & 0x00FF)
+                    if (v[x] != nn)
+                    {
+                        programCounter += 4;
+                    }
+                    else
                     {
                         programCounter += 2;
                     }
-                    programCounter += 2;
                     break;
 
                 case 0x5000: // 5XY0: Skip if v[X] is equal to v[y]
-                    if (v[(opcode & 0x0F00) >> 8] == v[(opcode & 0x00F0) >> 4])
+                    if (v[x] == v[y])
+                    {
+                        programCounter += 4;
+                    }
+                    else
                     {
                         programCounter += 2;
                     }
-                    programCounter += 2;
+                    
                     break;
                 
                 case 0x6000: // 6XNN: Sets v[X] to NN
-                    v[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
+                    v[x] = nn;
                     programCounter += 2;
                     break;
 
                 case 0x7000: // 7XNN: Adds NN to v[X]
-                    v[(opcode & 0x0F00) >> 8] += opcode & 0x00FF;
+                    v[x] += nn;
                     programCounter += 2;
                     break;
 
                 case 0x8000:
-                    switch (opcode & 0x000F)
+                    switch (n)
                     {
-                        default:
-                            printf ("Unknown Opcode! 0x%xX\n", opcode);
-                            break;
+                        
 
                         case 0x0000: //8XY0: Sets v[X] to v[Y]
-                            v[(opcode & 0x0F00) >> 8] = v[(opcode & 0x00F0) >> 4];
+                            v[x] = v[y];
                             programCounter += 2;
                             break;
 
                         case 0x0001: //8XY1: Sets v[X] |= v[Y]
-                            v[(opcode & 0x0F00) >> 8] |= v[(opcode & 0x00F0) >> 4];
+                            v[x] |= v[y];
                             programCounter += 2;
                             break;
 
                         case 0x0002: //8XY2: Sets v[X] &= v[Y]
-                            v[(opcode & 0x0F00) >> 8] &= v[(opcode & 0x00F0) >> 4];
+                            v[x] &= v[y];
                             programCounter += 2;
                             break;
 
                         case 0x0003: //8XY3: Sets v[X] ^= v[Y]
-                            v[(opcode & 0x0F00) >> 8] ^= v[(opcode & 0x00F0) >> 4];
+                            v[x] ^= v[y];
                             programCounter += 2;
                             break;
 
                         case 0x0004: //8XY4: Adds v[Y] to v[X]
-                            v[(opcode & 0x0F00) >> 8] += v[(opcode & 0x00F0) >> 4];
+                            v[x] += v[y];
+                            if(v[y] > (0xFF - v[x]))
+                                v[0xF] = 1; //carry
+                            else
+                                v[0xF] = 0;
                             programCounter += 2;
                             break;
 
                         case 0x0005: //8XY5: Subtracts v[Y] from v[X]
-                            v[(opcode & 0x0F00) >> 8] -= v[(opcode & 0x00F0) >> 4];
+                            if(v[y] > v[x])
+                                v[0xF] = 0; // there is a borrow
+                            else
+                                v[0xF] = 1;
+                            v[x] -= v[y];
                             programCounter += 2;
                             break;
 
                         case 0x0006: //8XY6: Sets v[X] >>= v[Y]
-                            v[(opcode & 0x0F00) >> 8] >>= v[(opcode & 0x00F0) >> 4];
+                            v[0xF] = v[x] & 0x1;
+                            v[x] >>= 1;
                             programCounter += 2;
                             break;
 
                         case 0x0007: //8XYE: Sets v[X] = v[Y] - v[X]
-                            v[(opcode & 0x0F00) >> 8] = v[(opcode & 0x00F0) >> 4] - v[(opcode & 0x0F00) >> 8];
-                            programCounter += 2;
+                            if(v[x] > v[y])	// VY-VX
+                                v[0xF] = 0; // there is a borrow
+                            else
+                                v[0xF] = 1;
+                            v[x] = v[y] - v[x];
                             break;
 
                         case 0x000E: //8XYE: Sets v[X] <<= v[Y]
-                            v[(opcode & 0x0F00) >> 8] <<= v[(opcode & 0x00F0) >> 4];
+                            v[0xF] = v[x] >> 7;
+                            v[x] <<= 1;
                             programCounter += 2;
+                            break;
+
+                        default:
+                            printf ("Unknown Opcode! 0x%x\n", opcode);
+                            exit(3);
                             break;
                     }
                     break;
 
                 case 0x9000: // 5XY0: Skip if v[X] is NOT equal to v[y]
-                    if (v[(opcode & 0x0F00) >> 8] != v[(opcode & 0x00F0) >> 4])
+                    if (v[x] != v[y])
+                    {
+                        programCounter += 4;
+                    }
+                    else
                     {
                         programCounter += 2;
                     }
-                    programCounter += 2;
+                    
                     break;
 
                 case 0xA000: // ANNN: Sets indexRegister to the address NNN
-                    indexRegister = opcode & 0x0FFF;
+                    indexRegister = nnn;
                     programCounter += 2;
+                    break;
+                
+                case 0xB000:
+                    programCounter = nnn + v[0];
                     break;
 
                 case 0xC000: // CXNN: Sets v[x] = rand()
-                    v[(opcode & 0x0F00) >> 8] = rand() & (opcode & 0x00FF);
+                    v[x] = (rand() % 0x100) & nn;
                     programCounter += 2;
                     break;
 
                 case 0xD000: // DXYH: Draw Sprite
-                    DrawSprite(&framebuffer, v[(opcode & 0x0F00) >> 8], v[(opcode & 0x00F0) >> 4], (opcode & 0x000F));
+                    DrawSprite(&framebuffer, v[x], v[y], n);
 
                     programCounter += 2;
                     break;
                 
                 case 0xE000:
-                    printf ("Unknown Opcode! 0x%xX\n", opcode);
+                    printf ("Unknown Opcode! 0x%x\n", opcode);
                     programCounter += 2;
+
+                    //exit(3);
                     break;
 
                 case 0xF000: // FX##
-                    switch (opcode & 0x00FF)
+                    switch (nn)
                     {
                         case 0x0007: //Sets v[X] to the value of the delay timer
-                            v[(opcode & 0x0F00) >> 8] = delayTimer;
+                            v[x] = delayTimer;
                             programCounter += 2;
                             break;
 
                         case 0x0015: //Set delay timer to v[x]
-                            delayTimer = v[(opcode & 0x0F00) >> 8];
+                            delayTimer = v[x];
                             programCounter += 2;
                             break;
                         
                         case 0x001E: //Add v[X] to indexRegister
-                            indexRegister += v[(opcode & 0x0F00) >> 8];
+                            indexRegister += v[x];
                             programCounter += 2;
                             break;
 
                         case 0x0029: //Set indexRegister to location of sprite in v[x]
-                            indexRegister = v[(opcode & 0x0F00) >> 8] * 5;
+                            indexRegister = v[x] * 5;
                             programCounter += 2;
                             break;
 
                         case 0x0033: //Decimal stuff
-                            memory[indexRegister] = v[(opcode & 0x0F00) >> 8] / 100;
-                            memory[indexRegister + 1] = (v[(opcode & 0x0F00) >> 8] / 10) % 10;
-                            memory[indexRegister + 2] = (v[(opcode & 0x0F00) >> 8] % 100) % 10;
+                            memory[indexRegister] = v[x] / 100;
+                            memory[indexRegister + 1] = (v[x] / 10) % 10;
+                            memory[indexRegister + 2] = (v[x] % 100) % 10;
                             programCounter += 2;
                             break;
 
                         case 0x0055: //Stores v[0] to v[x] in memory at indexRegister
-                            for (int i = 0; i <= (opcode & 0x0F00) >> 8; ++i)
+                            for (int i = 0; i <= x; ++i)
                             {
                                 memory[indexRegister + i] = v[i];
                             }
@@ -239,7 +291,7 @@ namespace vaxe
                             break;
 
                         case 0x0065: //Stores memory in v[0] to v[x] at indexRegister
-                            for (int i = 0; i <= (opcode & 0x0F00) >> 8; ++i)
+                            for (int i = 0; i <= x; ++i)
                             {
                                 v[i] = memory[indexRegister + i];
                             }
@@ -247,7 +299,8 @@ namespace vaxe
                             break;
 
                         default:
-                            printf ("Unknown Opcode! 0x%xX\n", opcode);
+                            printf ("Unknown Opcode! 0x%x\n", opcode);
+                            exit(3);
                             break;
                     }
                     break;
@@ -301,21 +354,23 @@ namespace vaxe
             memory[i] = fonts[i];
         }
 
+        palette.ClearPalette();
+        palette.AddColor({0,0,0,255});
+        palette.AddColor({255,255,255,255});
+
         memory.InsertRom(rom, romSize, 0x200);
 
     }
 
-    void vApp_Chip8::DrawSprite(vFramebuffer* framebuffer, unsigned short x, unsigned short y, unsigned short height)
-    {
-        for (int i = 0; i < height; i++)
+    void vApp_Chip8::DrawSprite(vFramebuffer* framebuffer, unsigned short _x, unsigned short _y, unsigned short _height)
+    { 
+        for (int i = 0; i < _height; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                int framebufferIndex = (WIDTH * (y+i) + x + (7-j)) * 3;
+                int framebufferIndex = (WIDTH * (_y+i) + _x + (7-j));
                 bool isOn = (memory[indexRegister + i] >> j & 0x01);
-                framebuffer->TESTONLY_SetValue(framebufferIndex, (isOn ? 0xFF : 0x0));
-                framebuffer->TESTONLY_SetValue(framebufferIndex + 1, (isOn ? 0xFF : 0x0));
-                framebuffer->TESTONLY_SetValue(framebufferIndex + 2, (isOn ? 0xFF : 0x0));
+                framebuffer->SetColor(framebufferIndex, palette[isOn ? 1 : 0]);
             }
         }
 

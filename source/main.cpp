@@ -8,7 +8,7 @@
 
 vaxe::vApp_Chip8 app{};
 
-std::string romPath = "../roms/chip-8/demos/Stars [Sergey Naydenov, 2010].ch8";
+std::string romPath = "../roms/chip-8/test_opcode.ch8";
 size_t romSize;
 
 
