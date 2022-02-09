@@ -8,5 +8,8 @@ namespace vaxe
     {
     public:
         int Run() override;
+
+        unsigned char* rom;
+        size_t romSize;
     };
 }
