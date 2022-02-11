@@ -2,15 +2,15 @@
 
 namespace vaxe
 {
-    vWindow::vWindow(uint32_t width, uint32_t height, std::string name) : m_width(width), m_height(height), m_name(name)
+    vWindow::vWindow(byte_4 width, byte_4 height, std::string name) : m_width(width), m_height(height), m_name(name)
     {
         /* Initialize the library */
         SDL_Init(SDL_INIT_EVERYTHING);
 
         // Setup window
-        //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-        // SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-        //SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
         SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 ); 

@@ -4,17 +4,18 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(${NAME} VERSION 0.0.1)
 
+find_package(SDL2 REQUIRED)
+
 if (WIN32)
-    add_subdirectory("third_party/glfw")
+    find_package(OpenGL REQUIRED COMPONENTS OpenGL)
 else()
-    find_package(SDL2 REQUIRED)
+    find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
 endif()
 
 set(ENTT_PATH "${CMAKE_SOURCE_DIR}/third_party/entt")
 
-find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
+
 find_package(GLEW)
-find_package(glm)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/source/*.cpp)
 

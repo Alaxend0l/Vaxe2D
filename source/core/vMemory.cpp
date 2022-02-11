@@ -4,7 +4,7 @@
 
 namespace vaxe
 {
-    vMemory::vMemory(uint64_t size, uint8_t endian) : m_size(size), m_endian(endian)
+    vMemory::vMemory(byte_8 size, byte_1 endian) : m_size(size), m_endian(endian)
     {
         m_data = new byte_1[size];
     }
@@ -19,7 +19,7 @@ namespace vaxe
         memset(m_data, 0x00, m_size);
     }
 
-    void vMemory::InsertRom(byte_1* rom, size_t romSize, uint64_t offset)
+    void vMemory::InsertRom(byte_1* rom, size_t romSize, byte_8 offset)
     {
         for (int i = 0; i < romSize; ++i)
         {
@@ -27,7 +27,7 @@ namespace vaxe
         }
     }
 
-    byte_1& vMemory::operator[](uint64_t offset)
+    byte_1& vMemory::operator[](byte_8 offset)
     {
         if (offset < 0 || offset >= m_size)
         {

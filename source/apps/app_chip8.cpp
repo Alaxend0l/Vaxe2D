@@ -378,10 +378,14 @@ namespace vaxe
                     bool isOnInBuffer = framebuffer->GetColor(indexRegister).r;
                     if (isOnInBuffer)
                     {
+                        framebuffer->SetColor(framebufferIndex, palette[0]);
                         v[0xF] = 1;
                     }
-
-                    framebuffer->SetColor(framebufferIndex, palette[(isOnInBuffer ^= 1) ? 1 : 0]);
+                    else
+                    {
+                        framebuffer->SetColor(framebufferIndex, palette[1]);
+                    }
+                    
                     
                 }
 

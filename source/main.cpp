@@ -1,4 +1,4 @@
-#include "apps/app_chip8.h"
+#include "apps/app_nes.h"
 
 #include "types/vByte1.h"
 
@@ -8,9 +8,9 @@
 #include <stdexcept>
 #include <fstream>
 
-vaxe::vApp_Chip8 app{};
+vaxe::vApp_NES app{};
 
-std::string romPath = "../roms/chip-8/demos/Maze [David Winter, 199x].ch8";
+std::string romPath = "../roms/nes/nestest.nes";
 size_t romSize;
 
 

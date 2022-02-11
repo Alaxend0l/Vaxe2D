@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "types/vByte4.h"
+
 // libs
 
 #include "GL/glew.h"
@@ -15,7 +17,7 @@ namespace vaxe
     class vWindow
     {
     public:
-        vWindow(uint32_t width, uint32_t height, std::string name);
+        vWindow(byte_4 width, byte_4 height, std::string name);
         ~vWindow();
 
         // Generic Functions
@@ -25,14 +27,14 @@ namespace vaxe
         // Getters and Setters
 
         SDL_Window* GetSDLWindow() { return m_window; }
-        uint32_t GetWindowWidth() { return m_width; }
-        uint32_t GetWindowHeight() { return m_height; }
+        byte_4 GetWindowWidth() { return m_width; }
+        byte_4 GetWindowHeight() { return m_height; }
     private:
         SDL_Window* m_window;
 
         std::string m_name;
 
-        uint32_t m_width;
-        uint32_t m_height;
+        byte_4 m_width;
+        byte_4 m_height;
     };
 }

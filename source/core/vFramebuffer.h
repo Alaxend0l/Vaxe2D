@@ -3,6 +3,8 @@
 // types
 
 #include "types/vByte1.h"
+#include "types/vByte4.h"
+#include "types/vByte8.h"
 
 // core
 
@@ -19,27 +21,27 @@ namespace vaxe
     class vFramebuffer
     {
     public:
-        vFramebuffer(SDL_Renderer* renderer, uint32_t width, uint32_t height);
+        vFramebuffer(SDL_Renderer* renderer, byte_4 width, byte_4 height);
         ~vFramebuffer();
 
         void ClearBuffer();
         void UpdateTexture();
 
-        void SetColor(uint32_t x, uint32_t y, vColor color);
-        void SetColor(uint64_t offset, vColor color);
+        void SetColor(byte_4 x, byte_4 y, vColor color);
+        void SetColor(byte_8 offset, vColor color);
 
-        vColor GetColor(uint64_t offset);
+        vColor GetColor(byte_8 offset);
 
         byte_1* GetDataStart() { return &m_data[0]; }
-        uint64_t GetDataSize() { return m_size; }
+        byte_8 GetDataSize() { return m_size; }
         SDL_Texture* GetTexture() { return m_texture; }
 
     private:
         byte_1* m_data;
 
-        uint32_t m_width;
-        uint32_t m_height;
-        uint64_t m_size;
+        byte_4 m_width;
+        byte_4 m_height;
+        byte_8 m_size;
 
         SDL_Renderer* m_renderer;
         SDL_Texture* m_texture;

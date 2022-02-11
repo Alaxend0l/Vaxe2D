@@ -1,5 +1,7 @@
 #pragma once
 
+#include "types/vByte4.h"
+
 #include "core/vWindow.h"
 
 namespace vaxe
@@ -7,7 +9,7 @@ namespace vaxe
     class vRenderer
     {
     public:
-        vRenderer(SDL_Window* window, u_int32_t flags);
+        vRenderer(SDL_Window* window, byte_4 flags);
         ~vRenderer();
 
         void PerformRender(SDL_Texture* texture);
@@ -16,6 +18,6 @@ namespace vaxe
     private:
         SDL_Renderer* m_renderer;
         SDL_Window* m_window;
-        u_int32_t m_flags;
+        byte_4 m_flags;
     };
 }
