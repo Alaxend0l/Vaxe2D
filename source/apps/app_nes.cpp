@@ -14,10 +14,10 @@ namespace vaxe
     int vApp_NES::Run()
     {
         vWindow window { WIDTH * 3, HEIGHT * 3, "NES" };
-        vRenderer renderer { window.GetSDLWindow(), SDL_RENDERER_ACCELERATED};
+        vRenderer renderer { window.GetWindow(), SDL_RENDERER_ACCELERATED};
         SDL_RenderSetLogicalSize(renderer.GetRenderer(), WIDTH, HEIGHT);
 
-        SDL_GLContext gl_context = SDL_GL_CreateContext(window.GetSDLWindow());
+        SDL_GLContext gl_context = SDL_GL_CreateContext(window.GetWindow());
         SDL_GL_SetSwapInterval(0);  // Enable vsync
 
         vFramebuffer framebuffer {renderer.GetRenderer(), WIDTH, HEIGHT};

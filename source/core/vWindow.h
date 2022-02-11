@@ -26,7 +26,7 @@ namespace vaxe
 
         // Getters and Setters
 
-        SDL_Window* GetSDLWindow() { return m_window; }
+        SDL_Window* GetWindow() { return m_window; }
         byte_4 GetWindowWidth() { return m_width; }
         byte_4 GetWindowHeight() { return m_height; }
     private:

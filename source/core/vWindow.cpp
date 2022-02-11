@@ -19,7 +19,7 @@ namespace vaxe
 
         m_window = SDL_CreateWindow(
             name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-            width, height, SDL_RENDERER_ACCELERATED);
+            width, height, SDL_RENDERER_ACCELERATED | SDL_WINDOW_RESIZABLE);
     }
 
     vWindow::~vWindow()

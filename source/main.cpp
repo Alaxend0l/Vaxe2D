@@ -1,4 +1,4 @@
-#include "apps/app_nes.h"
+#include "apps/app_chip8.h"
 
 #include "types/vByte1.h"
 
@@ -8,10 +8,14 @@
 #include <stdexcept>
 #include <fstream>
 
-vaxe::vApp_NES app{};
+vaxe::vApp_Chip8 app{};
 
-std::string romPath = "../roms/nes/nestest.nes";
+std::string romPath = "../roms/chip-8/test_opcode.ch8";
 size_t romSize;
+
+#ifdef main
+# undef main
+#endif /* main */
 
 
 unsigned char* loadRom()

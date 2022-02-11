@@ -2,8 +2,12 @@
 
 #include <iostream>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_timer.h>
+
+
+#include "imgui.h"
+#include "imgui_impl_sdl.h"
+#include "imgui_impl_sdlrenderer.h"
+
 
 #define WIDTH 64
 #define HEIGHT 32
@@ -12,23 +16,46 @@ namespace vaxe
 {
     int vApp_Chip8::Run()
     {
-        vWindow window { WIDTH * 8, HEIGHT * 8, "CHIP-8" };
-        vRenderer renderer { window.GetSDLWindow(), SDL_RENDERER_ACCELERATED};
-        SDL_RenderSetLogicalSize(renderer.GetRenderer(), WIDTH, HEIGHT);
 
-        SDL_GLContext gl_context = SDL_GL_CreateContext(window.GetSDLWindow());
+        vWindow window { WIDTH * 16, HEIGHT * 16, "CHIP-8" };
+        vRenderer renderer { window.GetWindow(), SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED };
+        // SDL_RenderSetLogicalSize(renderer.GetRenderer(), WIDTH, HEIGHT);
+
+        SDL_GLContext gl_context = SDL_GL_CreateContext(window.GetWindow());
         SDL_GL_SetSwapInterval(0);  // Enable vsync
 
         vFramebuffer framebuffer {renderer.GetRenderer(), WIDTH, HEIGHT};
 
         InitializeValues();
 
+        // Setup Dear ImGui context
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+        // Setup Dear ImGui style
+        ImGui::StyleColorsDark();
+
+        // Setup Platform/Renderer bindings
+        // window is the SDL_Window*
+        // context is the SDL_GLContext
+        ImGui_ImplSDL2_InitForSDLRenderer(window.GetWindow());
+        ImGui_ImplSDLRenderer_Init(renderer.GetRenderer());
+        //ForOpenGL(window.GetWindow(), gl_context);
+
+        SDL_Event event;
+        Uint32 frameTime;
+        Uint32 frameStart;
+        Uint32 frameDelay = 1000 / 60;
+
         /* Loop until the user closes the window */
         while (!quit)
         {
-            SDL_Event event;
+            frameStart = SDL_GetTicks();
+            
             while(SDL_PollEvent(&event))
             {
+                ImGui_ImplSDL2_ProcessEvent(&event);
                 switch(event.type)
                 {
                 case SDL_KEYDOWN:
@@ -41,6 +68,16 @@ namespace vaxe
             }
 
             /// Emulate Cycle
+
+            // Start the Dear ImGui frame
+            ImGui_ImplSDLRenderer_NewFrame();
+            ImGui_ImplSDL2_NewFrame(window.GetWindow());
+            ImGui::NewFrame();
+
+            SDL_SetRenderDrawColor(renderer.GetRenderer(), 255, 0, 0, 255);
+            SDL_RenderClear(renderer.GetRenderer());
+
+            //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // Access Opcode
             opcode = memory[programCounter] << 8 | memory[programCounter + 1];
@@ -323,10 +360,31 @@ namespace vaxe
                 framebuffer.UpdateTexture();
             }
 
-            renderer.PerformRender(framebuffer.GetTexture());
+            ImGui::Begin("MyWindow");
+            ImGui::Image((ImTextureID)framebuffer.GetTexture(), ImGui::GetWindowSize());
+            ImGui::End();
+            ImGui::ShowDemoWindow();
 
-            SDL_Delay(1000 / 60);
+            
+            //renderer.PerformRender(framebuffer.GetTexture());
+            ImGui::Render();
+            SDL_SetRenderDrawColor(renderer.GetRenderer(), 0, 0, 0, 255);
+            SDL_RenderClear(renderer.GetRenderer());
+            ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
+            
+            SDL_RenderPresent(renderer.GetRenderer());
+            
+            frameTime = SDL_GetTicks() - frameStart;
+
+            if (frameDelay > frameTime) {
+                SDL_Delay(frameDelay - frameTime);
+            }
         }
+        
+        // Cleanup
+        ImGui_ImplSDLRenderer_Shutdown();
+        ImGui_ImplSDL2_Shutdown();
+        ImGui::DestroyContext();
         
         return 0;
     }

@@ -5,6 +5,7 @@ namespace vaxe
     vRenderer::vRenderer(SDL_Window* window, byte_4 flags) : m_window(window), m_flags(flags)
     {
         m_renderer = SDL_CreateRenderer(m_window, -1, m_flags);
+        //m_renderTexture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, 64, 32);
     }
 
     vRenderer::~vRenderer()
