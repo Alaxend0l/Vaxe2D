@@ -74,9 +74,6 @@ namespace vaxe
             ImGui_ImplSDL2_NewFrame(window.GetWindow());
             ImGui::NewFrame();
 
-            SDL_SetRenderDrawColor(renderer.GetRenderer(), 255, 0, 0, 255);
-            SDL_RenderClear(renderer.GetRenderer());
-
             //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // Access Opcode
@@ -108,7 +105,7 @@ namespace vaxe
                     switch (n)
                     {
                         case 0x0000: //0x00E0: Clear Screen
-                            framebuffer.ClearBuffer();
+                            framebuffer.ClearBuffer(0);
                             programCounter += 2;
                             break;
 

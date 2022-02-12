@@ -1,4 +1,4 @@
-#include "apps/app_chip8.h"
+#include "editor/vEditor.h"
 
 #include "types/vByte1.h"
 
@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <fstream>
 
-vaxe::vApp_Chip8 app{};
+vaxe::vEditor app{};
 
 std::string romPath = "../roms/chip-8/test_opcode.ch8";
 size_t romSize;
@@ -40,8 +40,8 @@ unsigned char* loadRom()
 
 int main(int argc, char **argv)
 {
-	app.rom = loadRom();
-	app.romSize = romSize;
+	//app.rom = loadRom();
+	//app.romSize = romSize;
 
 	try
 	{

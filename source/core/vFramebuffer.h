@@ -24,8 +24,9 @@ namespace vaxe
         vFramebuffer(SDL_Renderer* renderer, byte_4 width, byte_4 height);
         ~vFramebuffer();
 
-        void ClearBuffer();
+        void ClearBuffer(byte_1 value);
         void UpdateTexture();
+        void ChangeTextureSize(byte_4 width, byte_4 height);
 
         void SetColor(byte_4 x, byte_4 y, vColor color);
         void SetColor(byte_8 offset, vColor color);

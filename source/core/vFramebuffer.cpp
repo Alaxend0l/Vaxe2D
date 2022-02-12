@@ -7,9 +7,9 @@ namespace vaxe
         m_size = width * height * 4;
         m_data = new byte_1[m_size]();
 
-        m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, m_width, m_height);
+        m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, m_width, m_height);
 
-        ClearBuffer();
+        ClearBuffer(0);
     }
 
     vFramebuffer::~vFramebuffer()
@@ -42,13 +42,23 @@ namespace vaxe
         m_data[trueOffset + 3]};
     }
 
-    void vFramebuffer::ClearBuffer()
+    void vFramebuffer::ClearBuffer(byte_1 value = 0xFF)
     {
-        memset(GetDataStart(), 0x00, m_size);
+        memset(GetDataStart(), value, m_size);
     }
 
     void vFramebuffer::UpdateTexture()
     {
         SDL_UpdateTexture(m_texture, NULL, GetDataStart(), m_size/m_height);
+    }
+
+    void vFramebuffer::ChangeTextureSize(byte_4 width, byte_4 height)
+    {
+        if (width != m_width || height != m_height)
+        {
+            m_width = width;
+            m_height = height;
+            m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, m_width, m_height);
+        }
     }
 }

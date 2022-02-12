@@ -7,8 +7,7 @@ namespace vaxe
         /* Initialize the library */
         SDL_Init(SDL_INIT_EVERYTHING);
 
-        // Setup window
-        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -19,7 +18,9 @@ namespace vaxe
 
         m_window = SDL_CreateWindow(
             name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-            width, height, SDL_RENDERER_ACCELERATED | SDL_WINDOW_RESIZABLE);
+            width, height, SDL_RENDERER_ACCELERATED);
+
+        SDL_SetWindowResizable(m_window, SDL_TRUE);
     }
 
     vWindow::~vWindow()

@@ -3,6 +3,11 @@
 #include "types/vByte4.h"
 
 #include "core/vWindow.h"
+#include "core/vFramebuffer.h"
+
+#include "entity/vScene.h"
+#include "entity/vEntity.h"
+#include "entity/vComponent.h"
 
 namespace vaxe
 {
@@ -13,6 +18,7 @@ namespace vaxe
         ~vRenderer();
 
         void PerformRender(SDL_Texture* texture);
+        int PerformSceneRender(std::shared_ptr<vScene> scene, vFramebuffer* buffer);
 
         SDL_Renderer* GetRenderer() { return m_renderer; }
     private:
