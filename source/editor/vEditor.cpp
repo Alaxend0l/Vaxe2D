@@ -1,18 +1,10 @@
 #include "editor/vEditor.h"
 
-#include "imgui.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_sdlrenderer.h"
-
 namespace vaxe
 {
     vEditor::vEditor()
     {
-        m_scene = std::make_shared<vScene>();
-        m_scene->CreateEntity("TEST");
-        m_scene->CreateEntity("TEST1");
-        m_scene->CreateEntity("TEST2");
-        m_scene->CreateEntity("TEST3");
+        m_project = std::make_shared<vProject>();
 
         // Add some windows
         std::shared_ptr<vLayer_Dock> newDock = std::make_shared<vLayer_Dock>();
@@ -21,7 +13,7 @@ namespace vaxe
 
         std::shared_ptr<vLayer_Hierarchy> newHierarchy = std::make_shared<vLayer_Hierarchy>();
         newHierarchy->OnCreate();
-        newHierarchy->SetScene(m_scene);
+        newHierarchy->SetScene(m_project->GetCurrentScene());
         m_editorLayers.push_back(newHierarchy);
 
         std::shared_ptr<vLayer_Properties> newProperties = std::make_shared<vLayer_Properties>();
@@ -31,6 +23,7 @@ namespace vaxe
 
         std::shared_ptr<vLayer_FileSystem> newFileSystem = std::make_shared<vLayer_FileSystem>();
         newFileSystem->OnCreate();
+        newFileSystem->SetProject(m_project);
         m_editorLayers.push_back(newFileSystem);
     }
 
@@ -58,6 +51,8 @@ namespace vaxe
         ImGui_ImplSDL2_InitForSDLRenderer(m_window.GetWindow());
         ImGui_ImplSDLRenderer_Init(m_renderer.GetRenderer());
 
+        /*
+
         auto testRenderer = m_scene->CreateEntity("SpriteTest");
         auto& sprite = testRenderer.AddComponent<SpriteRenderer>();
         sprite.m_texture = std::make_shared<vTexture>(m_renderer.GetRenderer(), "../images/gearIcon.png");
@@ -65,6 +60,8 @@ namespace vaxe
         auto testRenderer2 = m_scene->CreateEntity("SpriteTest2");
         auto& sprite2 = testRenderer2.AddComponent<SpriteRenderer>();
         sprite2.m_texture = std::make_shared<vTexture>(m_renderer.GetRenderer(), "../images/xjyfdug7f3g81.png");
+
+        */
 
         // Prepare some performance related values
 
@@ -110,7 +107,7 @@ namespace vaxe
             int contentX = ImGui::GetContentRegionAvail().x;
             int contentY = ImGui::GetContentRegionAvail().y;
             m_editorBuffer.ChangeTextureSize(contentX, contentY);
-            m_renderer.PerformSceneRender(m_scene, &m_editorBuffer);
+            m_renderer.PerformSceneRender(m_project->GetCurrentScene(), &m_editorBuffer);
             ImGui::Image((ImTextureID)m_editorBuffer.GetTexture(), ImGui::GetContentRegionAvail());
             ImGui::End();
             ImGui::ShowDemoWindow();

@@ -2,8 +2,6 @@
 
 #include "layers/layer_hierarchy.h"
 
-#include "misc/cpp/imgui_stdlib.h"
-
 namespace vaxe
 {
     class vLayer_Properties : public vLayer

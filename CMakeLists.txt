@@ -9,6 +9,7 @@ project(${NAME} VERSION 0.0.1)
 set(ENTT_PATH "${CMAKE_SOURCE_DIR}/third_party/entt")
 set(IMGUI_PATH "${CMAKE_SOURCE_DIR}/third_party/imgui")
 set(GLM_PATH "${CMAKE_SOURCE_DIR}/third_party/glm")
+set(PUGIXML_PATH "${CMAKE_SOURCE_DIR}/third_party/pugixml/src")
 
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/source/*.cpp)
@@ -30,6 +31,11 @@ link_libraries(${SDL2_IMAGE_LIBRARY_DIR})
 
 # GLM
 include_directories(${GLM_PATH})
+
+# PUGIXML
+include_directories(${PUGIXML_PATH})
+#add_library(${PUGIXML_PATH}/pugixml.cpp)
+
 
 # OPENGL
 

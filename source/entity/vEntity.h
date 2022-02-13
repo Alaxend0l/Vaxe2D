@@ -43,9 +43,17 @@ namespace vaxe
 			scene->registry.remove<T>(entityHandle);
 		}
 
+		template<typename T>
+		auto GetAllComponents()
+		{
+			return scene->registry.try_get<T>(entityHandle);
+		}
+
         operator bool() const { return entityHandle != entt::null; }
 		operator entt::entity() const { return entityHandle; }
 		operator uint32_t() const { return (uint32_t)entityHandle; }
+
+		uint32_t GetEntityHandle() { return (uint32_t)entityHandle;}
 
 		bool operator==(const vEntity& other) const
 		{

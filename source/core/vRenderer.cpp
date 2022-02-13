@@ -34,17 +34,23 @@ namespace vaxe
             
             if (entity.HasComponent<SpriteRenderer>())
             {
-                auto& transform = entity.GetComponent<Transform2D>();
-                auto& sprite = entity.GetComponent<SpriteRenderer>();
+                auto& info = entity.GetComponent<EntityInfo>();
 
-                SDL_Rect spriteRect;
+                if (info.isEnabled)
+                {
+                    auto& transform = entity.GetComponent<Transform2D>();
+                    auto& sprite = entity.GetComponent<SpriteRenderer>();
 
-                spriteRect.x = transform.position.x;
-                spriteRect.y = transform.position.y;
-                spriteRect.w = sprite.m_texture->GetTextureWidth() * transform.scale.x;
-                spriteRect.h = sprite.m_texture->GetTextureHeight() * transform.scale.y;
+                    SDL_Rect spriteRect;
 
-                SDL_RenderCopy(m_renderer, sprite.m_texture->GetTexture(), NULL, &spriteRect);
+                    spriteRect.x = transform.position.x;
+                    spriteRect.y = transform.position.y;
+                    spriteRect.w = sprite.m_texture->GetTextureWidth() * transform.scale.x;
+                    spriteRect.h = sprite.m_texture->GetTextureHeight() * transform.scale.y;
+
+                    SDL_RenderCopyEx(m_renderer, sprite.m_texture->GetTexture(), NULL, &spriteRect, transform.rotation, NULL, SDL_FLIP_NONE);
+                }
+                
             }
         });
 

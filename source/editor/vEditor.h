@@ -12,6 +12,10 @@
 #include "types/vByte1.h"
 #include "types/vTexture.h"
 
+// filesystem
+
+#include "filesystem/vProject.h"
+
 // core
 
 #include "core/vWindow.h"
@@ -41,7 +45,8 @@ namespace vaxe
         vWindow m_window {1280, 720, "Vaxe2D"};
         vRenderer m_renderer {m_window.GetWindow(), SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED };
 
-        std::shared_ptr<vScene> m_scene;
+        std::shared_ptr<vProject> m_project;
+        
 
         // Framebuffers
 
