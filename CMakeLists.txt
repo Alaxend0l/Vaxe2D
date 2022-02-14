@@ -4,11 +4,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(${NAME} VERSION 0.0.1)
 
-
-
-set(ENTT_PATH "${CMAKE_SOURCE_DIR}/third_party/entt")
 set(IMGUI_PATH "${CMAKE_SOURCE_DIR}/third_party/imgui")
 set(GLM_PATH "${CMAKE_SOURCE_DIR}/third_party/glm")
+set(IMGUIFILEDIALOG_PATH "${CMAKE_SOURCE_DIR}/third_party/imgui_filedialog")
 set(PUGIXML_PATH "${CMAKE_SOURCE_DIR}/third_party/pugixml/src")
 
 
@@ -36,6 +34,8 @@ include_directories(${GLM_PATH})
 include_directories(${PUGIXML_PATH})
 #add_library(${PUGIXML_PATH}/pugixml.cpp)
 
+
+# add_executable(${IMGUIFILEDIALOG_PATH}/ImGuiFileDialog.cpp)
 
 # OPENGL
 
@@ -66,19 +66,24 @@ add_library("ImGui" STATIC ${IMGUI_SOURCES})
 target_include_directories("ImGui" PUBLIC ${IMGUI_PATH} ${IMGUI_PATH}/backends ${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${GLEW_INCLUDE_DIR})
 target_link_libraries("ImGui" PUBLIC ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
 
+# IMGUI_FILE_DIALOG
+
+add_library(imgui_filedialog STATIC ${IMGUIFILEDIALOG_PATH}/ImGuiFileDialog.cpp)
+target_include_directories(imgui_filedialog PUBLIC ${IMGUIFILEDIALOG_PATH})
+target_link_libraries(imgui_filedialog PUBLIC "ImGui")
+
 target_link_libraries(${NAME} PUBLIC
     ImGui
+    imgui_filedialog
     ) 
 
 # Includes
 
 target_include_directories(${NAME} PUBLIC
     ${PROJECT_SOURCE_DIR}/source
-    ${ENTT_PATH}
     
    
     )
-
 
 
 

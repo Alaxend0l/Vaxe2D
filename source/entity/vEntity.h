@@ -3,10 +3,12 @@
 //core
 
 #include "entity/vScene.h"
+#include "entity/vComponent.h"
 
-//lib
+// std
 
-#include <entt.hpp>
+#include <memory>
+#include <vector>
 
 namespace vaxe
 {
@@ -14,58 +16,73 @@ namespace vaxe
     {
     public:
         vEntity() = default;
-		vEntity(entt::entity handle, vScene* _scene);
+		vEntity(vScene* _scene, unsigned int id);
 		vEntity(const vEntity& other) = default;
 
-        template<typename T, typename... Args>
-		T& AddComponent(Args&&... args)
+		/*
+
+		void AddComponent(std::shared_ptr<VaxeComponent> newComponent)
 		{
-			T& component = scene->registry.emplace<T>(entityHandle, std::forward<Args>(args)...);
-			//scene->OnComponentAdded<T>(*this, component);
-			return component;
+			if (HasComponent(newComponent->componentIndex) == -1)
+			{
+				m_components.push_back(newComponent);
+			}
 		}
 
-		template<typename T>
-		T& GetComponent()
+		*/
+
+		template<typename T, typename... Args>
+		std::shared_ptr<T> AddComponent(Args&&... args)
 		{
-			return scene->registry.get<T>(entityHandle);
+			std::shared_ptr<T> newComponent = std::make_shared<T>(std::forward<Args>(args)...);
+			if (HasComponent(newComponent->componentIndex) == -1)
+			{
+				m_components.push_back(newComponent);
+			}
+			return newComponent;
 		}
 
-		template<typename T>
-		bool HasComponent()
+		std::shared_ptr<VaxeComponent> GetComponent(int index)
 		{
-			return scene->registry.try_get<T>(entityHandle) != NULL;
+			return m_components.at(index);
+		}
+		
+		int HasComponent(int componentType)
+		{
+			for (int i = 0; i < m_components.size(); i++)
+			{
+				if (m_components.at(i)->componentIndex == componentType)
+				{
+					return i;
+				}
+			}
+			return -1;
 		}
 
-		template<typename T>
 		void RemoveComponent()
 		{
-			scene->registry.remove<T>(entityHandle);
+
+			//scene->registry.remove<T>(entityHandle);
 		}
 
-		template<typename T>
-		auto GetAllComponents()
-		{
-			return scene->registry.try_get<T>(entityHandle);
-		}
+		void SetName(std::string newName) { m_name = newName; }
+		
 
-        operator bool() const { return entityHandle != entt::null; }
-		operator entt::entity() const { return entityHandle; }
-		operator uint32_t() const { return (uint32_t)entityHandle; }
+		std::string GetName() { return m_name; }
+		bool GetEnabled() { return m_enabled; }
+		unsigned int GetEntityID() { return m_entityID; }
+		unsigned int GetComponentCount() { return m_components.size(); }
 
-		uint32_t GetEntityHandle() { return (uint32_t)entityHandle;}
+		unsigned int GetChildrenCount() { return m_childEntities.size(); }
 
-		bool operator==(const vEntity& other) const
-		{
-			return entityHandle == other.entityHandle && scene == other.scene;
-		}
-
-		bool operator!=(const vEntity& other) const
-		{
-			return !(*this == other);
-		}
     private:
-        entt::entity entityHandle{entt::null};
+		std::vector<std::shared_ptr<VaxeComponent>> m_components;
+        std::vector<std::shared_ptr<vEntity>> m_childEntities;
+		std::shared_ptr<vEntity> m_parent;
+
+		std::string m_name;
+		bool m_enabled = true;
+		unsigned int m_entityID;
         vScene* scene = nullptr;
     };
 }

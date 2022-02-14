@@ -42,13 +42,12 @@ namespace vaxe
         float item_spacing_y = ImGui::GetStyle().ItemSpacing.y;
         float item_offset_y = -item_spacing_y * 0.5f;
         float line_height = ImGui::GetTextLineHeight() + item_spacing_y;
-        DrawRowsBackground(m_scene->registry.size(), line_height, x1, x2, item_offset_y, 0, ImGui::GetColorU32(ImVec4(0.2f, 0.2f, 0.2f, 0.5f)));
+        DrawRowsBackground(m_scene->GetEntityCount(), line_height, x1, x2, item_offset_y, 0, ImGui::GetColorU32(ImVec4(0.2f, 0.2f, 0.2f, 0.5f)));
 
-        m_scene->registry.each([&](auto entityID)
+        for (int i = 0; i < m_scene->GetEntityCount(); i++)
         {
-            vEntity entity{ entityID , m_scene.get() };
-            DrawEntityNode(entity);
-        });
+            DrawEntityNode(m_scene->GetEntity(i));
+        }
 
         if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
             m_selectedEntity = {};
@@ -75,23 +74,24 @@ namespace vaxe
         return -1;
     }
 
-    void vLayer_Hierarchy::DrawEntityNode(vEntity entity)
+    void vLayer_Hierarchy::DrawEntityNode(std::shared_ptr<vEntity> entity)
     {
-        auto& info = entity.GetComponent<EntityInfo>();
+        //auto& info = entity.GetComponent<EntityInfo>();
+        //std::shared_ptr<EntityInfo> info = (std::shared_ptr<EntityInfo>)&(entity->GetComponent(0));
 		
 		ImGuiTreeNodeFlags flags = ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 
         bool opened = false;
 
-        if (info.isEnabled)
+        if (entity->GetEnabled())
         {
-            opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, info.name.c_str());
+            opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity->GetEntityID(), flags, entity->GetName().c_str());
         }
         else
         {
             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255,255,255,120));
-		    opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, info.name.c_str());
+		    opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity->GetEntityID(), flags, entity->GetName().c_str());
             ImGui::PopStyleColor();
         }
 
@@ -113,7 +113,7 @@ namespace vaxe
 		if (opened)
 		{
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-			bool opened = ImGui::TreeNodeEx((void*)9817239, flags, info.name.c_str());
+			bool opened = ImGui::TreeNodeEx((void*)9817239, flags, entity->GetName().c_str());
 			if (opened)
 				ImGui::TreePop();
 			ImGui::TreePop();
@@ -125,7 +125,6 @@ namespace vaxe
 			if (m_selectedEntity == entity)
 				m_selectedEntity = {};
 		}
-
         
     }
 

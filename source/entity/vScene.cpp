@@ -7,19 +7,26 @@ namespace vaxe
     vScene::vScene() { }
     vScene::~vScene() { }
 
-    vEntity vScene::CreateEntity(const std::string& name)
+    std::shared_ptr<vEntity> vScene::CreateEntity(const std::string& name)
     {
-        vEntity entity = {registry.create(), this};
+        std::shared_ptr<vEntity> entity = std::make_shared<vEntity>(this, m_pid);
 
-        auto& info = entity.AddComponent<EntityInfo>();
-        info.name = name;
-        entity.AddComponent<Transform2D>();
+        entity->SetName(name);
+
+        auto info = entity->AddComponent<EntityInfo>();
+        info->name = name;
+        
+        entity->AddComponent<Transform2D>();
+
+        m_pid++;
+
+        m_entities.push_back(entity);
 
         return entity;
     }
 
-    void vScene::DestroyEntity(vEntity entity)
+    void vScene::DestroyEntity(std::shared_ptr<vEntity> entity)
     {
-        registry.destroy(entity);
+        //registry.destroy(entity);
     }
 }

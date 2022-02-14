@@ -1,6 +1,7 @@
 #pragma once
 
-#include <entt.hpp>
+#include <memory>
+#include <vector>
 
 namespace vaxe
 {
@@ -12,13 +13,16 @@ namespace vaxe
         vScene();
         ~vScene();
 
-        vEntity CreateEntity(const std::string& name);
-        void DestroyEntity(vEntity entity);
+        std::shared_ptr<vEntity> CreateEntity(const std::string& name);
+        void DestroyEntity(std::shared_ptr<vEntity> entity);
 
-        entt::registry& GetRegistry() { return registry; }
+        int GetEntityCount() { return m_entities.size(); }
+        std::shared_ptr<vEntity> GetEntity(int index) { return m_entities.at(index); }
 
     private:
-        entt::registry registry;
+        std::vector<std::shared_ptr<vEntity>> m_entities;
+
+        unsigned int m_pid;
 
         friend class vEntity;
         friend class vLayer_Hierarchy;

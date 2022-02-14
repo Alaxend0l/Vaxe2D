@@ -7,10 +7,12 @@ namespace vaxe
     template<typename T>
     void DrawIfComponentExists(vEntity* entity)
     {
+        /*
         if (entity->HasComponent<T>())
         {
-            ((VaxeComponent*)&entity->GetComponent<T>())->DrawComponent();
+            //((VaxeComponent*)&entity->GetComponent<T>())->DrawComponent();
         }
+        */
     }
     int vLayer_Properties::OnCreate()
     {
@@ -25,11 +27,16 @@ namespace vaxe
     int vLayer_Properties::OnDraw()
     {
         ImGui::Begin("Properties");
+
         if (m_hierarchy->m_selectedEntity)
         {
-            DrawIfComponentExists<EntityInfo>(&m_hierarchy->m_selectedEntity);
-            DrawIfComponentExists<Transform2D>(&m_hierarchy->m_selectedEntity);
-            DrawIfComponentExists<SpriteRenderer>(&m_hierarchy->m_selectedEntity);
+            for (int i = 0; i < m_hierarchy->m_selectedEntity->GetComponentCount(); i++)
+            {
+                m_hierarchy->m_selectedEntity->GetComponent(i)->DrawComponent();
+            }
+            //DrawIfComponentExists<EntityInfo>(&m_hierarchy->m_selectedEntity);
+            //DrawIfComponentExists<Transform2D>(&m_hierarchy->m_selectedEntity);
+            //DrawIfComponentExists<SpriteRenderer>(&m_hierarchy->m_selectedEntity);
         }
 
         ImGui::End();

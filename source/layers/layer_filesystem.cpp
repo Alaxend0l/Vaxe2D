@@ -1,5 +1,7 @@
 #include "layers/layer_filesystem.h"
 
+#include "ImGuiFileDialog.h"
+
 namespace vaxe
 {
     int vLayer_FileSystem::OnCreate()
@@ -54,6 +56,32 @@ namespace vaxe
             ImGui::PopID();
         }
 
+        /// Right Click Context Menu
+        if (ImGui::BeginPopupContextWindow())
+        {
+            if (ImGui::MenuItem("Import File..."))
+            {
+                ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".cpp,.h,.hpp", ".");
+            }
+
+            ImGui::Separator();
+
+            if (ImGui::BeginMenu("Create Folder"))
+            {
+                ImGui::InputText("Name##CreateFolderPopup", &m_filesystem_createfolder_name);
+                if (ImGui::Button("Create Folder##CreateFolderPopup"))
+                {
+                    m_project->CreateSubDirectoryInCurrentDirectory(m_filesystem_createfolder_name);
+                    m_project->SaveProject();
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::EndPopup();
+        }
+
+        ShowFileMenu();
+
         ImGui::End();
         return 0;
     }
@@ -61,5 +89,22 @@ namespace vaxe
     int vLayer_FileSystem::OnDestroy()
     {
         return -1;
+    }
+
+    void vLayer_FileSystem::ShowFileMenu()
+    {
+        if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) 
+        {
+            // action if OK
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+            // action
+            }
+            
+            // close
+            ImGuiFileDialog::Instance()->Close();
+        }
     }
 }

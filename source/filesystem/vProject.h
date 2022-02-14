@@ -25,9 +25,13 @@ namespace vaxe
         std::shared_ptr<vScene> GetCurrentScene() { return m_currentScene; }
         std::shared_ptr<vDirectory> GetCurrentDirectory() { return m_currentDirectory; }
 
+        std::shared_ptr<vDirectory> CreateSubDirectoryInCurrentDirectory(std::string name);
+
         void SetNewDirectory(std::shared_ptr<vDirectory> newDirectory) { m_currentDirectory = newDirectory; }
         void GoUpDirectory() { if (!CurrentDirectoryIsRoot()) m_currentDirectory = m_currentDirectory->GetParentDirectory(); }
         bool CurrentDirectoryIsRoot() { return (m_currentDirectory->GetRelativePath() == ""); }
+
+        bool SaveProject();
 
     private:
 

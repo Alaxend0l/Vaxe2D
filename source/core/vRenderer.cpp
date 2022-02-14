@@ -28,6 +28,7 @@ namespace vaxe
         SDL_RenderClear(m_renderer);
 
         //Display all graphics in the scene
+        /*
         scene->GetRegistry().each([&](auto entityID)
         {
             vEntity entity{ entityID , scene.get() };
@@ -53,6 +54,7 @@ namespace vaxe
                 
             }
         });
+        */
 
         //Reset Render Target
         //SDL_RenderPresent(m_renderer);

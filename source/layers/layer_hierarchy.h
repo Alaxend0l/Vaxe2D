@@ -16,9 +16,9 @@ namespace vaxe
         int OnDestroy() override;
         void SetScene(const std::shared_ptr<vScene>& scene) { m_scene = scene; }
     private:
-        void DrawEntityNode(vEntity entity);
+        void DrawEntityNode(std::shared_ptr<vEntity> entity);
         std::shared_ptr<vScene> m_scene;
-        vEntity m_selectedEntity;
+        std::shared_ptr<vEntity> m_selectedEntity;
 
         friend class vLayer_Properties;
     };

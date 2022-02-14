@@ -63,7 +63,16 @@ namespace vaxe
         std::string basePath = m_path + relativePath;
         std::filesystem::create_directory(basePath);
 
-        return directory->CreateSubDirectory(basePath, relativePath, name);
+        return directory->CreateSubDirectory(name);
+    }
+
+    std::shared_ptr<vDirectory> vProject::CreateSubDirectoryInCurrentDirectory(std::string name)
+    {
+        std::string relativePath = m_currentDirectory->GetRelativePath() + "/" + name;
+        std::string basePath = m_path + relativePath;
+        std::filesystem::create_directory(basePath);
+
+        return m_currentDirectory->CreateSubDirectory(name);
     }
 
     void HandleFiles(byte_1 type, byte_1 variant, pugi::xml_node child)
@@ -110,7 +119,7 @@ namespace vaxe
 
                 std::cout << "Adding directory: " << relative << std::endl;
                 
-                std::shared_ptr<vDirectory> newDirectory = directory->AddSubDirectory(m_path, relative, child);
+                std::shared_ptr<vDirectory> newDirectory = directory->AddSubDirectory(child);
                 IterateThroughDirectory(newDirectory);
 
             }
@@ -118,5 +127,8 @@ namespace vaxe
         }
     }
 
-
+    bool vProject::SaveProject()
+    {
+        return doc.save_file((m_path + "/vconfig.xml").c_str());
+    }
 }

@@ -1,9 +1,6 @@
 #pragma once
 
-#include "imgui.h"
-#include "imgui_internal.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_sdlrenderer.h"
+#include "entity/imguiFuncs.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 

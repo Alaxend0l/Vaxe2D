@@ -25,6 +25,8 @@ namespace vaxe
         newFileSystem->OnCreate();
         newFileSystem->SetProject(m_project);
         m_editorLayers.push_back(newFileSystem);
+
+        m_project->GetCurrentScene()->CreateEntity("TESTING");
     }
 
     vEditor::~vEditor()

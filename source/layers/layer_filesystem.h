@@ -16,6 +16,10 @@ namespace vaxe
         void SetProject(const std::shared_ptr<vProject>& project) { m_project = project; }
 
     private:
+
+        void ShowFileMenu();
         std::shared_ptr<vProject> m_project;
+
+        std::string m_filesystem_createfolder_name;
     };
 }

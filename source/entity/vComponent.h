@@ -2,27 +2,34 @@
 
 // types
 
+#include "types/vByte4.h"
 #include "types/vTexture.h"
 #include "entity/imguiFuncs.h"
 
 // std
 
 #include <string>
-
-
-
+#include <memory>
+#include <vector>
 
 
 namespace vaxe
 {
-    struct VaxeComponent : entt::type_list<>
+    class VaxeComponent
     {
+    public:
+        VaxeComponent() {}
         bool componentEnabled = true;
+        const byte_4 componentIndex = 0;
         virtual int DrawComponent() {return -1;}
     };
 
-    struct EntityInfo : VaxeComponent
+    class EntityInfo : public VaxeComponent
     {
+    public:
+        EntityInfo () {}
+        const byte_4 componentIndex = 1;
+
         bool isEnabled = true;
         std::string name = "UNNAMED";
 
@@ -39,8 +46,12 @@ namespace vaxe
 
     };
 
-    struct Transform2D : VaxeComponent
+    class Transform2D : public VaxeComponent
     {
+    public:
+        Transform2D(){}
+        const byte_4 componentIndex = 2;
+
         glm::vec3 position = {0,0,0};
         glm::vec2 scale = {1,1};
         float rotation = 0;
@@ -70,8 +81,12 @@ namespace vaxe
 
 
 
-    struct SpriteRenderer : VaxeComponent
+    class SpriteRenderer : public VaxeComponent
     {
+    public:
+        SpriteRenderer(){}
+        const byte_4 componentIndex = 3;
+
         std::shared_ptr<vTexture> m_texture;
         glm::vec2 offset = {0,0};
         glm::vec2 tiling = {1,1};

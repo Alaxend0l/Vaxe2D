@@ -2,5 +2,5 @@
 
 namespace vaxe
 {
-    vEntity::vEntity(entt::entity handle, vScene* _scene) : entityHandle(handle), scene(_scene){}
+    vEntity::vEntity(vScene* _scene, unsigned int id) : scene(_scene), m_entityID(id){}
 }
