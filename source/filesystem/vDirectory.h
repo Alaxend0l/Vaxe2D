@@ -18,9 +18,18 @@ namespace vaxe
     public:
         vDirectory(std::string base, std::string relative, std::string name, pugi::xml_node node) : m_basePath(base), m_relativePath(relative), m_name(name), m_xmlNode(node) {}
 
-        std::shared_ptr<vDirectory> AddSubDirectory(std::string base, std::string relative, std::string name)
+        std::shared_ptr<vDirectory> CreateSubDirectory(std::string base, std::string relative, std::string name)
         { 
-            m_folders.push_back(std::make_shared<vDirectory>(base, relative, name, m_xmlNode.append_child(name.c_str())));
+            auto node = m_xmlNode.append_child(name.c_str());
+            node.append_attribute("isFile") = false;
+            m_folders.push_back(std::make_shared<vDirectory>(base, relative, name, node));
+            m_folders.at(m_folders.size()-1)->SetParentDirectory(shared_from_this());
+            return m_folders.at(m_folders.size()-1);
+        }
+
+        std::shared_ptr<vDirectory> AddSubDirectory(std::string base, std::string relative, pugi::xml_node node)
+        { 
+            m_folders.push_back(std::make_shared<vDirectory>(base, relative, node.name(), node));
             m_folders.at(m_folders.size()-1)->SetParentDirectory(shared_from_this());
             return m_folders.at(m_folders.size()-1);
         }
@@ -39,6 +48,7 @@ namespace vaxe
         std::string GetBasePath() { return m_basePath; }
         std::string GetRelativePath() { return m_relativePath; }
         std::string GetName() { return m_name; }
+        pugi::xml_node GetXMLNode() { return m_xmlNode; }
     private:
         std::vector<std::shared_ptr<vDirectory>> m_folders;
         std::vector<std::shared_ptr<vFile>> m_files;

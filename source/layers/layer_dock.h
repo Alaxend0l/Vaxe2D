@@ -11,5 +11,7 @@ namespace vaxe
         int OnUpdate()  override;
         int OnDraw()    override;
         int OnDestroy() override;
+    private:
+        bool showDemo;
     };
 }

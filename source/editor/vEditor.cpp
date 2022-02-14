@@ -110,7 +110,6 @@ namespace vaxe
             m_renderer.PerformSceneRender(m_project->GetCurrentScene(), &m_editorBuffer);
             ImGui::Image((ImTextureID)m_editorBuffer.GetTexture(), ImGui::GetContentRegionAvail());
             ImGui::End();
-            ImGui::ShowDemoWindow();
 
             
             

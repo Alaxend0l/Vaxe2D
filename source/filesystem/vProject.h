@@ -34,6 +34,8 @@ namespace vaxe
         bool LoadConfigFile();
         bool CreateNewConfigFile();
 
+        void IterateThroughDirectory(std::shared_ptr<vDirectory> directory);
+
         std::shared_ptr<vDirectory> CreateDirectory(std::shared_ptr<vDirectory> directory, std::string name);
 
         pugi::xml_document doc;

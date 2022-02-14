@@ -15,7 +15,7 @@ namespace vaxe
     int vLayer_FileSystem::OnDraw()
     {
         ImGui::Begin("File System");
-        ImVec2 button_sz = {50, 50};
+        ImVec2 button_sz = {100, 50};
         ImGuiStyle& style = ImGui::GetStyle();
         float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 

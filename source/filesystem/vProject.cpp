@@ -1,5 +1,12 @@
 #include "filesystem/vProject.h"
 
+#include <iostream>
+
+// types
+
+#include "types/vByte1.h"
+#include "types/vByte2.h"
+
 namespace vaxe
 {
     vProject::vProject()
@@ -29,6 +36,7 @@ namespace vaxe
 
         m_currentDirectory = std::make_shared<vDirectory>(m_path, "", "Base", doc.child("Hierarchy"));
 
+        IterateThroughDirectory(m_currentDirectory);
         return 1;
     }
 
@@ -55,6 +63,60 @@ namespace vaxe
         std::string basePath = m_path + relativePath;
         std::filesystem::create_directory(basePath);
 
-        return directory->AddSubDirectory(basePath, relativePath, name);
+        return directory->CreateSubDirectory(basePath, relativePath, name);
     }
+
+    void HandleFiles(byte_1 type, byte_1 variant, pugi::xml_node child)
+    {
+        switch ((int)type)
+        {
+            default:
+                std::cout << "Unknown File Type! " << child.name() << std::endl;
+                break;
+
+            case VFILE_UNKNOWN:
+                std::cout << "Deliberately Unknown File Type! " << child.name() << std::endl;
+                break;
+
+            case VFILE_VETA:
+                std::cout << "Ignore this! " << child.name() << std::endl;
+                break;
+        }
+    }
+
+
+    void vProject::IterateThroughDirectory(std::shared_ptr<vDirectory> directory)
+    {
+        for (pugi::xml_node child = directory->GetXMLNode().first_child(); child;)
+        {
+            // Get next child node before possibly deleting current child
+            pugi::xml_node next = child.next_sibling();
+
+            // Check whether child node shall be deleted
+            bool isFile = child.attribute("isFile").as_bool();
+
+            if (isFile)
+            {
+                byte_2 fullType = child.attribute("filetype").as_uint();
+                byte_1 fileType = (fullType & 0xFF00) << 8;
+                byte_1 typeVariant = (fullType & 0x00FF);
+                
+                HandleFiles(fileType, typeVariant, child);
+
+            }
+            else
+            {
+                std::string relative = directory->GetRelativePath() + "/" + child.name();
+
+                std::cout << "Adding directory: " << relative << std::endl;
+                
+                std::shared_ptr<vDirectory> newDirectory = directory->AddSubDirectory(m_path, relative, child);
+                IterateThroughDirectory(newDirectory);
+
+            }
+            child = next;
+        }
+    }
+
+
 }
